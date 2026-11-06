@@ -1,0 +1,112 @@
+// =============================================================
+// VarejoMax_03_PowerPivot.xlsx -- medidas preliminares (Etapa 3)
+// Tabela-base de todas as medidas: fVendas
+// Separador: vírgula (padrão). No Excel pt-BR, digitar com ";" (Apêndice B do guia).
+// Regra de negócio herdada da Etapa 2 / proposta técnica:
+//   pedidos Cancelados e Devolvidos NÃO entram no faturamento;
+//   devoluções são analisadas à parte.
+// =============================================================
+
+// Quanto vendemos antes dos descontos? -- Moeda, R$, 2 casas
+Faturamento Bruto :=
+CALCULATE (
+    SUMX (
+        fVendas,
+        ROUND ( fVendas[Quantidade] * fVendas[Preco_Unitario], 2 )
+    ),
+    fVendas[Status_Pedido] <> "Cancelado"
+)
+
+// Quanto entrou (líquido de descontos, sem cancelados/devolvidos)? -- Moeda, R$, 2 casas
+Faturamento :=
+CALCULATE (
+    SUMX (
+        fVendas,
+        ROUND ( fVendas[Quantidade] * fVendas[Preco_Unitario]
+              * ( 1 - fVendas[Desconto_Pct] ), 2 )
+    ),
+    fVendas[Status_Pedido] <> "Cancelado",
+    fVendas[Status_Pedido] <> "Devolvido"
+)
+
+// Quantas vendas (pedidos, não itens)? -- Inteiro
+Qtd Pedidos := DISTINCTCOUNT ( fVendas[ID_Pedido] )
+
+// Quanto o cliente gasta por pedido, em média? -- Moeda, R$, 2 casas
+Ticket Médio := DIVIDE ( [Faturamento], [Qtd Pedidos] )
+
+// Quantos itens vendidos? -- Inteiro
+Qtd Itens := SUM ( fVendas[Quantidade] )
+
+// Quantos itens tem um pedido típico? -- Número, 2 casas
+Itens por Pedido := DIVIDE ( [Qtd Itens], [Qtd Pedidos] )
+
+// Quanto custa o que foi vendido (custo de referência do cadastro)? -- Moeda, R$, 2 casas
+Custo Total :=
+SUMX (
+    fVendas,
+    fVendas[Quantidade] * RELATED ( dProduto[Custo_Ref] )
+)
+
+// Qual a margem sobre o faturamento? -- Porcentagem, 1 casa
+Margem Bruta % := DIVIDE ( [Faturamento] - [Custo Total], [Faturamento] )
+
+// E com o custo praticado em cada venda? -- Moeda, R$, 2 casas
+Custo Realizado := SUM ( fVendas[Custo_Unitario] * fVendas[Quantidade] )
+
+// Margem com o custo praticado (2026 tem reajuste sobre a referência) -- Porcentagem, 1 casa
+Margem Realizada % := DIVIDE ( [Faturamento] - [Custo Realizado], [Faturamento] )
+
+// Quanto vende o e-commerce (Site, App, Marketplace)? -- Moeda, R$, 2 casas
+Faturamento Online :=
+CALCULATE ( [Faturamento], dCanalLoja[Tipo_Canal] = "Online (e-commerce)" )
+
+// Qual a participação do e-commerce no faturamento? -- Porcentagem, 1 casa
+% Vendas Online := DIVIDE ( [Faturamento Online], [Faturamento] )
+
+// Quantos pedidos entregues fora do prazo? -- Inteiro
+Qtd Pedidos Atrasados :=
+CALCULATE ( DISTINCTCOUNT ( fVendas[ID_Pedido] ), fVendas[Status_Atraso] = "Atrasado" )
+
+// Qual a proporção de pedidos atrasados? -- Porcentagem, 1 casa
+% Pedidos Atrasados := DIVIDE ( [Qtd Pedidos Atrasados], [Qtd Pedidos] )
+
+// Como o faturamento cresceu mês a mês? (exige dCalendario marcada como Tabela de Datas)
+// -- Porcentagem, 1 casa
+Cresc. MoM % :=
+VAR Atual = [Faturamento]
+VAR Anterior =
+    CALCULATE ( [Faturamento], DATEADD ( dCalendario[Data], -1, MONTH ) )
+RETURN
+    IF ( NOT ISBLANK ( Atual ), DIVIDE ( Atual - Anterior, Anterior ) )
+
+// ============ medidas de conferência (formato inteiro, exceto a última) ============
+
+// Quantas linhas tem a fato? (tem de bater com a Etapa 2: 13613)
+Conf Linhas fVendas := COUNTROWS ( fVendas )
+
+// Quantas linhas foram descartadas? (Etapa 2: 86)
+Conf Linhas Rejeitados := COUNTROWS ( Rejeitados )
+
+// Linhas lidas = aceitas + rejeitadas (Etapa 2: 13699)
+Conf Linhas Lidas := [Conf Linhas fVendas] + [Conf Linhas Rejeitados]
+
+// FKs órfãs nas 5 dimensões (deve ser 0)
+Conf Vendas sem Cadastro :=
+COUNTROWS ( FILTER ( fVendas, ISBLANK ( RELATED ( dProduto[Produto] ) ) ) )
+  + COUNTROWS ( FILTER ( fVendas, ISBLANK ( RELATED ( dCliente[Nome_Cliente] ) ) ) )
+  + COUNTROWS ( FILTER ( fVendas, ISBLANK ( RELATED ( dCidade[Regiao] ) ) ) )
+  + COUNTROWS ( FILTER ( fVendas, ISBLANK ( RELATED ( dCanalLoja[Tipo_Canal] ) ) ) )
+  + COUNTROWS ( FILTER ( fVendas, ISBLANK ( RELATED ( dTransportadora[Tipo] ) ) ) ) + 0
+
+// Chaves primárias duplicadas (deve ser 0)
+Conf PK Duplicada :=
+( COUNTROWS ( dProduto ) - DISTINCTCOUNT ( dProduto[ID_Produto] ) )
+  + ( COUNTROWS ( dCliente ) - DISTINCTCOUNT ( dCliente[ID_Cliente] ) )
+  + ( COUNTROWS ( dCidade ) - DISTINCTCOUNT ( dCidade[Cidade] ) )
+  + ( COUNTROWS ( dCanalLoja ) - DISTINCTCOUNT ( dCanalLoja[Chave_Canal_Loja] ) )
+  + ( COUNTROWS ( dTransportadora ) - DISTINCTCOUNT ( dTransportadora[Transportadora] ) )
+  + ( COUNTROWS ( dCalendario ) - DISTINCTCOUNT ( dCalendario[Data] ) )
+
+// O modelo reproduz a coluna da Etapa 2? (deve ser 0)
+Conf Dif Faturamento := ROUND ( SUM ( fVendas[Valor_Liquido] ) - [Faturamento], 2 )
