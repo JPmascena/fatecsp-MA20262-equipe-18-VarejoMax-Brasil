@@ -1,0 +1,7 @@
+rank_fat;categoria;pedidos_validos;unidades_vendidas;fat_bruto;fat_liquido;participacao_pct;margem_ref_pct;margem_real_pct;delta_margem_pp
+1;Eletrônicos;2345;3187;1545305.3;1472456.6;42.69;16.78;15.7;-1.08
+2;Casa e Decoração;2008;2746;675698.6;638476.72;18.51;38.57;37.76;-0.82
+3;Moda;2555;3567;515015.4;491996.15;14.27;48.32;47.64;-0.68
+4;Esporte e Lazer;937;1326;402594.5;383317.49;11.11;40.82;40.13;-0.69
+5;Beleza e Saúde;1814;2647;280720.3;267746.23;7.76;43.39;42.83;-0.56
+6;Livros e Papelaria;1969;3108;208728.5;194879.28;5.65;37.16;36.38;-0.79

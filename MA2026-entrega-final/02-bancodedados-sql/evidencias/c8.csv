@@ -1,0 +1,13 @@
+categoria;tipo_canal;pedidos_totais;pedidos_cancelados;pedidos_devolvidos;pct_cancelamento;pct_devolucao;receita_perdida_canc_dev;desconto_medio_valido_pct;fat_bruto_valido;fat_liquido_valido;margem_real_pct
+Beleza e Saúde;Loja física;182;0;2;0.0;1.1;459.41;2.26;26912.3;26259.87;44.29
+Beleza e Saúde;Online (e-commerce);1772;88;50;4.97;2.82;19155.6;4.98;253808.0;241486.36;42.67
+Casa e Decoração;Loja física;187;0;2;0.0;1.07;359.8;2.36;49759.4;48258.13;35.02
+Casa e Decoração;Online (e-commerce);1966;76;67;3.87;3.41;44351.04;4.97;625939.2;590218.59;37.98
+Eletrônicos;Loja física;236;0;2;0.0;0.85;609.5;1.93;166667.1;163165.99;17.73
+Eletrônicos;Online (e-commerce);2314;93;110;4.02;4.75;158918.71;4.94;1378638.2;1309290.61;15.44
+Esporte e Lazer;Loja física;85;0;1;0.0;1.18;227.72;2.05;50520.0;48544.47;39.52
+Esporte e Lazer;Online (e-commerce);911;31;27;3.4;2.96;27996.96;5.03;352074.5;334773.02;40.22
+Livros e Papelaria;Loja física;166;0;0;0.0;0.0;0.0;1.75;14036.1;13809.42;29.49
+Livros e Papelaria;Online (e-commerce);1947;90;54;4.62;2.77;12729.76;4.94;194692.4;181069.86;36.9
+Moda;Loja física;262;0;3;0.0;1.15;479.6;2.19;49058.4;48003.88;48.08
+Moda;Online (e-commerce);2581;114;171;4.42;6.63;52161.67;4.78;465957.0;443992.27;47.6

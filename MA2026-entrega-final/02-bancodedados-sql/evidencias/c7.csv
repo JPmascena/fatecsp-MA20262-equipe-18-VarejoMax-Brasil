@@ -1,0 +1,5 @@
+segmento_rfv;qtd_clientes;pct_clientes;total_pedidos;freq_media;recencia_media_dias;faturamento_liquido;pct_faturamento;ltv_medio_cliente;ticket_medio_pedido
+1-Novo (1 pedido);449;28.58;449;1.0;161.8;201801.91;5.85;449.45;449.45
+2-Recorrente (2 a 4 pedidos);612;38.96;1704;2.78;127.7;701622.5;20.34;1146.44;411.75
+3-Fiel (5 a 7 pedidos);232;14.77;1374;5.92;87.0;577416.05;16.74;2488.86;420.24
+4-VIP (8+ pedidos);278;17.7;4764;17.14;48.6;1968032.01;57.06;7079.25;413.1

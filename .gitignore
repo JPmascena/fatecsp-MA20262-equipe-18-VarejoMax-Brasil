@@ -1,0 +1,21 @@
+# Arquivos temporários do Excel e Office
+~$*.xlsx
+~$*.xlsm
+~$*.docx
+~$*.pptx
+*.tmp
+
+# Arquivos temporários e journals do SQLite
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Arquivos temporários do Power BI Desktop
+*.pbi/localSettings.json
+~$*.pbix
+
+# Python / SO
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

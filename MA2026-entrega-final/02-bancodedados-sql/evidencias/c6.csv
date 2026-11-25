@@ -1,0 +1,16 @@
+rank_criticidade;id_pedido;data_pedido;data_entrega_prevista;data_entrega_real;regiao;uf;cidade;transportadoras;max_atraso_dias;valor_liquido_pedido;nota_cliente
+1;PED-005672;2026-02-20;2026-03-07;2026-03-18;Norte;AM;Manaus;EntregaJá;11;351.26;
+2;PED-004552;2025-12-08;2025-12-24;2026-01-02;Norte;PA;Belém;EntregaJá;9;1166.42;
+3;PED-003928;2025-11-20;2025-12-04;2025-12-12;Norte;AM;Manaus;EntregaJá;8;348.77;3.0
+4;PED-008217;2026-07-22;2026-08-02;2026-08-09;Nordeste;CE;Fortaleza;RotaBR;7;8452.9;2.0
+5;PED-004424;2025-12-01;2025-12-13;2025-12-20;Nordeste;BA;Salvador;EntregaJá;7;125.93;1.0
+6;PED-004618;2025-12-11;2025-12-26;2026-01-01;Norte;AM;Manaus;TransNorte Logística;6;969.81;
+7;PED-007446;2026-06-04;2026-06-19;2026-06-25;Norte;AM;Manaus;RotaBR;6;299.9;
+8;PED-004973;2025-12-29;2026-01-13;2026-01-19;Norte;AM;Manaus;RotaBR;6;142.41;
+9;PED-001616;2025-06-09;2025-06-21;2025-06-27;Norte;AM;Manaus;EntregaJá;6;62.91;5.0
+10;PED-004098;2025-11-24;2025-12-08;2025-12-14;Norte;AM;Manaus;EntregaJá;6;42.42;2.0
+11;PED-002198;2025-07-27;2025-08-06;2025-08-12;Nordeste;PE;Recife;EntregaJá;6;40.41;2.0
+12;PED-002625;2025-08-30;2025-09-10;2025-09-15;Centro-Oeste;GO;Goiânia;Veloz Express;5;705.31;
+13;PED-008600;2026-08-10;2026-08-24;2026-08-29;Norte;PA;Belém;RotaBR;5;215.91;
+14;PED-003103;2025-10-04;2025-10-18;2025-10-23;Norte;PA;Belém;EntregaJá;5;170.91;3.0
+15;PED-005817;2026-03-03;2026-03-13;2026-03-18;Nordeste;BA;Salvador;RotaBR;5;39.81;2.0

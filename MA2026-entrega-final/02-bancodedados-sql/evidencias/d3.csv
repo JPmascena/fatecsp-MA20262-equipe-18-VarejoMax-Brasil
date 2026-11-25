@@ -1,0 +1,9 @@
+diagnostico;ocorrencias
+Clientes sem cidade (NULL em cliente.cidade);1
+Clientes sem e-mail (NULL em cliente.email);11
+Itens sem CEP (lojas fisicas / cancelados);408
+Pedidos sem data_envio (Cancelado / Em separacao);1192
+Itens sem data_entrega_real;689
+Itens sem avaliacao_cliente;7949
+Itens com Frete_Valor > 0 em Item = 1 (staging);4948
+Itens com Frete_Valor > 0 em Item <> 1 (staging);0

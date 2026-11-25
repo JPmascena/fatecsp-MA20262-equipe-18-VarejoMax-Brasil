@@ -1,0 +1,11 @@
+tipo_canal;canal;loja;pedidos_validos;unidades_vendidas;fat_liquido;participacao_rede_pct;ticket_medio;margem_real_pct;nota_media
+Online (e-commerce);Site;Online (sem loja);3763;7429;1588900.22;46.07;422.24;32.51;4.17
+Online (e-commerce);App;Online (sem loja);2161;4394;857691.62;24.87;396.9;29.08;4.19
+Online (e-commerce);Marketplace;Online (sem loja);1572;3201;654238.87;18.97;416.18;26.93;4.18
+Loja física;Loja Física;LJ01 - São Paulo Paulista;185;374;90110.89;2.61;487.09;27.94;4.28
+Loja física;Loja Física;LJ02 - São Paulo Tatuapé;160;312;74805.36;2.17;467.53;30.85;4.42
+Loja física;Loja Física;LJ03 - Rio Barra;132;257;55371.99;1.61;419.48;32.61;4.05
+Loja física;Loja Física;LJ04 - BH Savassi;130;239;52765.52;1.53;405.89;27.29;4.3
+Loja física;Loja Física;LJ05 - Curitiba Batel;82;152;36520.9;1.06;445.38;27.81;4.46
+Loja física;Loja Física;LJ07 - Brasília Asa Sul;71;148;22185.18;0.64;312.47;39.3;4.63
+Loja física;Loja Física;LJ06 - Porto Alegre Moinhos;35;75;16281.92;0.47;465.2;25.81;4.15

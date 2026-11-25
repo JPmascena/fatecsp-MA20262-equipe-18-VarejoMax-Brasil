@@ -1,0 +1,11 @@
+rank_nacional;cidade;uf;regiao;tem_loja_fisica;pedidos_validos;fat_liquido;participacao_pct;ticket_medio;pedidos_entregues;pedidos_atrasados;pct_atraso
+1;São Paulo;SP;Sudeste;Sim;2036;901513.58;26.14;442.79;2021;66;3.27
+2;Rio de Janeiro;RJ;Sudeste;Sim;834;341705.7;9.91;409.72;827;16;1.93
+3;Belo Horizonte;MG;Sudeste;Sim;801;335903.32;9.74;419.35;792;20;2.53
+4;Curitiba;PR;Sul;Sim;521;203469.02;5.9;390.54;514;15;2.92
+5;Fortaleza;CE;Nordeste;Não;408;157628.49;4.57;386.34;403;81;20.1
+6;Vitória;ES;Sudeste;Não;368;152694.15;4.43;414.93;364;11;3.02
+7;Brasília;DF;Centro-Oeste;Sim;380;146564.69;4.25;385.7;370;40;10.81
+8;Salvador;BA;Nordeste;Não;386;144489.4;4.19;374.32;374;77;20.59
+9;Recife;PE;Nordeste;Não;312;138408.1;4.01;443.62;307;75;24.43
+10;Campinas;SP;Sudeste;Não;347;131295.49;3.81;378.37;342;7;2.05

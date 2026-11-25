@@ -1,0 +1,3 @@
+anomalia;ocorrencias;exemplos
+Avaliacao fora de 1..5 (notas 0 e 6..10);8;PED-000355#item2=7, PED-001396#item1=9, PED-002845#item1=10, PED-003054#item2=8, PED-004936#item1=0, PED-006410#item1=6, PED-007411#item1=0, PED-008709#item1=10
+Entrega Inconsistente (data_entrega_real < data_envio);18;PED-000022#item2, PED-001195#item1, PED-001451#item1, PED-001915#item1, PED-002903#item2, PED-004083#item2, PED-004133#item2, PED-004898#ite

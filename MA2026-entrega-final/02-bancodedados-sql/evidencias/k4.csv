@@ -1,0 +1,6 @@
+cobertura_view;sem_match
+fato_vendas sem match em dim_tempo (data_pedido);0
+fato_vendas sem match em dim_cambio (data_pedido);0
+fato_vendas sem match em dim_clima (chave_clima);0
+dim_tempo sem match em dim_cambio;0
+dim_tempo x dim_cidade sem match em dim_clima (14.592 combinacoes);0

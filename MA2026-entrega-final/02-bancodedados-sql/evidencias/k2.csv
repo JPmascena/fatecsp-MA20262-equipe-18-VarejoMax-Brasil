@@ -1,0 +1,13 @@
+teste_integridade;orfaos
+Itens sem pedido;0
+Itens sem produto;0
+Itens sem transportadora;0
+Pedidos sem item;0
+Pedidos sem cliente;0
+Pedidos sem canal_loja;0
+Pedidos sem cidade;0
+Pedidos fora do calendario;0
+Clientes (cidade nao nula) sem cidade;0
+Cambio fora do calendario;0
+Clima sem cidade;0
+Clima fora do calendario;0
