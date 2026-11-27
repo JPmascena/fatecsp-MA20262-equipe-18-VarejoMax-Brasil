@@ -1,0 +1,25 @@
+Cidade;UF;Regiao;Latitude;Longitude;Tem_Loja_Fisica
+São Paulo;SP;Sudeste;-23,55;-46,63;Sim
+Rio de Janeiro;RJ;Sudeste;-22,91;-43,17;Sim
+Belo Horizonte;MG;Sudeste;-19,92;-43,94;Sim
+Brasília;DF;Centro-Oeste;-15,79;-47,88;Sim
+Salvador;BA;Nordeste;-12,97;-38,51;Não
+Fortaleza;CE;Nordeste;-3,73;-38,52;Não
+Curitiba;PR;Sul;-25,43;-49,27;Sim
+Recife;PE;Nordeste;-8,05;-34,88;Não
+Porto Alegre;RS;Sul;-30,03;-51,23;Sim
+Campinas;SP;Sudeste;-22,91;-47,06;Não
+Guarulhos;SP;Sudeste;-23,46;-46,53;Não
+Goiânia;GO;Centro-Oeste;-16,68;-49,25;Não
+Manaus;AM;Norte;-3,12;-60,02;Não
+Belém;PA;Norte;-1,46;-48,5;Não
+Florianópolis;SC;Sul;-27,6;-48,55;Não
+Vitória;ES;Sudeste;-20,32;-40,34;Não
+São Luís;MA;Nordeste;-2,53;-44,3;Não
+Natal;RN;Nordeste;-5,79;-35,21;Não
+Campo Grande;MS;Centro-Oeste;-20,47;-54,62;Não
+Cuiabá;MT;Centro-Oeste;-15,6;-56,1;Não
+João Pessoa;PB;Nordeste;-7,12;-34,86;Não
+Maceió;AL;Nordeste;-9,67;-35,74;Não
+Teresina;PI;Nordeste;-5,09;-42,8;Não
+Aracaju;SE;Nordeste;-10,91;-37,07;Não

@@ -1,0 +1,16 @@
+indicador;esperado_staging;banco;diferenca
+Itens de pedido (linhas);13613;13613;0
+Pedidos totais distintos;8996;8996;0
+Pedidos validos (sem Cancelado/Devolvido);8291;8291;0
+Unidades vendidas (validos);16581;16581;0
+Faturamento Liquido (validos);3448872.47;3448872.47;0.0
+Faturamento Bruto (nao Cancelado);3797167.4;3797167.4;0.0
+Frete Total (validos);93707.67;93707.67;0.0
+Produtos (dim_produto);49;49;0
+Clientes (dim_cliente);1607;1607;0
+Cidades (dim_cidade);24;24;0
+Canais/Lojas (dim_canal_loja);10;10;0
+Transportadoras (dim_transportadora);6;6;0
+Calendario (dim_tempo);608;608;0
+Cambio PTAX (dim_cambio);608;608;0
+Clima 24 Cidades (dim_clima);14592;14592;0

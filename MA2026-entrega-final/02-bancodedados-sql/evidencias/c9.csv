@@ -1,0 +1,11 @@
+faixa_dolar;grupo_categoria;dias_com_venda;pedidos_validos;unidades_vendidas;ptax_venda_medio;fat_liquido;ticket_medio;margem_ref_pct;margem_real_pct;compressao_margem_pp
+1-Abaixo de R$ 5,10;Demais Categorias;83;1203;2262;5.0183;335943.32;279.25;43.26;41.62;-1.65
+1-Abaixo de R$ 5,10;Eletrônicos;83;416;582;5.0258;273115.9;656.53;19.45;17.03;-2.42
+2-R$ 5,10 a R$ 5,39;Demais Categorias;241;3223;6071;5.2636;925092.39;287.03;42.26;41.32;-0.95
+2-R$ 5,10 a R$ 5,39;Eletrônicos;235;1055;1435;5.2676;641502.55;608.06;16.02;14.64;-1.38
+3-R$ 5,40 a R$ 5,69;Demais Categorias;173;1849;3518;5.5328;513162.27;277.54;41.73;41.73;0.0
+3-R$ 5,40 a R$ 5,69;Eletrônicos;169;621;831;5.5308;399481.63;643.29;16.71;16.59;-0.12
+4-R$ 5,70 a R$ 5,99;Demais Categorias;87;682;1320;5.7915;168716.1;247.38;38.97;39.0;0.03
+4-R$ 5,70 a R$ 5,99;Eletrônicos;76;202;277;5.7957;130688.99;646.98;15.63;15.63;0.0
+5-R$ 6,00 ou mais;Demais Categorias;21;124;223;6.0886;33501.79;270.18;38.51;38.55;0.04
+5-R$ 6,00 ou mais;Eletrônicos;20;51;62;6.0995;27667.53;542.5;14.37;14.37;0.0

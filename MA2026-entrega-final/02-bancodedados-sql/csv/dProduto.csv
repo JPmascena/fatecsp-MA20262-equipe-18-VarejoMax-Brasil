@@ -1,0 +1,50 @@
+ID_Produto;Produto;Categoria;Marca;Preco_Ref_2025;Preco_Ref_2026;Custo_Ref
+P001;Smartphone TechNova Z5 128GB;Eletrônicos;TechNova;1599,90;1659,90;1331,29
+P002;Fone Bluetooth SoundPro Air;Eletrônicos;SoundPro;249,90;259,90;196,42
+P003;"Smart TV 43"" 4K ViewMax";Eletrônicos;ViewMax;2199,90;2289,90;1767,12
+P004;"Notebook TechNova Book 15,6"" i5";Eletrônicos;TechNova;3899,90;4059,90;3170,42
+P005;Carregador Turbo 30W PowerGo;Eletrônicos;PowerGo;89,90;93,90;73,22
+P006;Caixa de Som Portátil SoundPro Beat;Eletrônicos;SoundPro;299,90;309,90;231,21
+P007;Smartwatch FitTech S2;Eletrônicos;FitTech;429,90;449,90;326,50
+P008;Teclado Mecânico KeyMaster K1;Eletrônicos;KeyMaster;289,90;299,90;241,27
+P009;Mouse sem Fio KeyMaster M2;Eletrônicos;KeyMaster;79,90;83,90;62,70
+P010;Câmera de Segurança Wi-Fi SafeHome;Eletrônicos;SafeHome;199,90;209,90;163,95
+P011;Jogo de Cama Queen 4 Peças;Casa e Decoração;CasaViva;189,90;199,90;114,57
+P012;Luminária de Mesa LED;Casa e Decoração;DecoArte;99,90;99,90;60,74
+P013;Air Fryer 4L;Casa e Decoração;CozinhaPlus;349,90;359,90;222,68
+P014;Conjunto de Panelas 5 Peças;Casa e Decoração;CozinhaPlus;279,90;289,90;174,86
+P015;Aspirador Robô LimpaMax;Casa e Decoração;LimpaMax;899,90;939,90;583,57
+P016;Tapete de Sala 2x1,5m;Casa e Decoração;DecoArte;249,90;259,90;154,29
+P017;Organizador Multiuso;Casa e Decoração;CasaViva;59,90;62,90;39,24
+P018;Cafeteira Elétrica;Casa e Decoração;CozinhaPlus;179,90;189,90;119,83
+P019;Camiseta Básica Algodão;Moda;ModaUrbana;59,90;62,90;31,28
+P020;Calça Jeans Slim;Moda;ModaUrbana;149,90;159,90;79,05
+P021;Tênis Casual;Moda;StyleWear;249,90;259,90;124,30
+P022;Jaqueta Corta-Vento;Moda;StyleWear;219,90;229,90;111,47
+P023;Vestido Midi;Moda;ModaUrbana;179,90;189,90;87,01
+P024;Mochila Urbana;Moda;StyleWear;129,90;139,90;71,28
+P025;Kit 6 Pares de Meias;Moda;ModaUrbana;49,90;51,90;25,21
+P026;Relógio Analógico Clássico;Moda;StyleWear;199,90;209,90;102,65
+P027;Perfume 100ml;Beleza e Saúde;BellaVita;229,90;239,90;133,45
+P028;Kit Skincare 3 Passos;Beleza e Saúde;DermaCare;159,90;169,90;89,02
+P029;Secador de Cabelo 1800W;Beleza e Saúde;BellaVita;149,90;159,90;83,41
+P030;Kit Shampoo + Condicionador;Beleza e Saúde;BellaVita;69,90;72,90;39,84
+P031;Protetor Solar FPS 50;Beleza e Saúde;DermaCare;59,90;62,90;34,69
+P032;Barbeador Elétrico;Beleza e Saúde;BellaVita;179,90;189,90;92,21
+P033;Vitamina C 60 Cápsulas;Beleza e Saúde;DermaCare;49,90;51,90;25,96
+P034;Creme Hidratante Corporal;Beleza e Saúde;DermaCare;39,90;41,90;21,52
+P035;Bicicleta Aro 29;Esporte e Lazer;ProSport;1599,90;1659,90;984,72
+P036;Esteira Elétrica Dobrável;Esporte e Lazer;ProSport;2299,90;2389,90;1277,18
+P037;Kit Halteres 10kg;Esporte e Lazer;ProSport;189,90;199,90;112,74
+P038;Tapete de Yoga;Esporte e Lazer;AquaFit;79,90;83,90;48,48
+P039;Garrafa Térmica 1L;Esporte e Lazer;OutVida;69,90;72,90;40,31
+P040;Bola de Futebol de Campo;Esporte e Lazer;ProSport;119,90;119,90;74,11
+P041;Barraca de Camping 4 Pessoas;Esporte e Lazer;OutVida;399,90;419,90;232,10
+P042;Corda de Pular Profissional;Esporte e Lazer;AquaFit;29,90;31,90;18,50
+P043;Livro Best-seller de Ficção;Livros e Papelaria;Editora Horizonte;49,90;51,90;36,12
+P044;Livro Técnico de Programação;Livros e Papelaria;TechLivros;119,90;119,90;81,52
+P045;Caderno Universitário 10 Matérias;Livros e Papelaria;Papelaria Ponto;34,90;36,90;25,38
+P046;Kit Canetas Gel 12 Cores;Livros e Papelaria;Papelaria Ponto;24,90;25,90;17,45
+P047;Agenda Executiva;Livros e Papelaria;Papelaria Ponto;44,90;46,90;31,07
+P048;Livro Infantil Ilustrado;Livros e Papelaria;Editora Horizonte;39,90;41,90;29,17
+P049;Box Trilogia de Fantasia;Livros e Papelaria;Editora Horizonte;129,90;139,90;87,93

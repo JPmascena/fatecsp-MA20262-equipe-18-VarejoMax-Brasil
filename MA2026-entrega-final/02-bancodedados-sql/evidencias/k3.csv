@@ -1,0 +1,8 @@
+regra_negocio;violacoes
+Quantidade <= 0;0
+Preco unitario <= 0 ou custo < 0;0
+Desconto fora de [0, 1];0
+Frete negativo ou presente em item <> 1 na fato_vendas;0
+Calendario fim_de_semana/feriado fora de Sim/Nao;0
+Divergencia formula valor_bruto ou valor_liquido vs staging;0
+Chave primaria duplicada em fato_vendas (id_pedido, item);0

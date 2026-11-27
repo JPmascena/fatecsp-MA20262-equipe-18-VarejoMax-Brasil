@@ -1,0 +1,582 @@
+// ============================================================================
+// VarejoMax Brasil — Medidas Oficiais do Modelo Semântico (Power BI)
+// ============================================================================
+// Tabela dedicada de medidas: '_Medidas'
+// Uso no Power BI Desktop:
+//   1. Criar tabela calculada: _Medidas = { BLANK() } (ocultar a coluna [Value]).
+//   2. Abrir DAX Query View, colar este script e clicar em
+//      "Update model with changes" (ou executar via Tabular Editor 2).
+//   3. Organizar as medidas nas 8 pastas de exibição indicadas abaixo.
+//
+// Pastas de Exibição (Display Folders):
+//   - 01 Vendas
+//   - 02 Custos & Margem
+//   - 03 Logística & Satisfação
+//   - 04 Clientes
+//   - 05 Canais & Mix
+//   - 06 Tempo, Câmbio & Clima
+//   - 07 Rótulos
+//   - 99 Conferência
+// ============================================================================
+
+DEFINE
+
+// ----------------------------------------------------------------------------
+// PASTA: 01 Vendas
+// ----------------------------------------------------------------------------
+
+MEASURE '_Medidas'[Faturamento Bruto] =
+    SUMX(
+        FILTER(
+            fato_vendas,
+            fato_vendas[status_pedido] <> "Cancelado"
+        ),
+        ROUND(fato_vendas[quantidade] * fato_vendas[preco_unitario], 2)
+    )
+
+MEASURE '_Medidas'[Faturamento] =
+    SUMX(
+        FILTER(
+            fato_vendas,
+            NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"})
+        ),
+        ROUND(
+            fato_vendas[quantidade]
+                * fato_vendas[preco_unitario]
+                * (1 - fato_vendas[desconto_pct]),
+            2
+        )
+    )
+
+MEASURE '_Medidas'[Desconto Concedido] =
+    SUMX(
+        FILTER(
+            fato_vendas,
+            NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"})
+        ),
+        ROUND(fato_vendas[quantidade] * fato_vendas[preco_unitario], 2)
+            - ROUND(
+                fato_vendas[quantidade]
+                    * fato_vendas[preco_unitario]
+                    * (1 - fato_vendas[desconto_pct]),
+                2
+            )
+    )
+
+MEASURE '_Medidas'[% Desconto Médio] =
+    DIVIDE(
+        [Desconto Concedido],
+        [Faturamento] + [Desconto Concedido]
+    )
+
+MEASURE '_Medidas'[Qtd Pedidos] =
+    CALCULATE(
+        DISTINCTCOUNT(fato_vendas[id_pedido]),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Qtd Pedidos Total] =
+    DISTINCTCOUNT(fato_vendas[id_pedido])
+
+MEASURE '_Medidas'[Ticket Médio] =
+    DIVIDE([Faturamento], [Qtd Pedidos])
+
+MEASURE '_Medidas'[Qtd Itens] =
+    CALCULATE(
+        SUM(fato_vendas[quantidade]),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Itens por Pedido] =
+    DIVIDE([Qtd Itens], [Qtd Pedidos])
+
+MEASURE '_Medidas'[Frete Total] =
+    SUM(fato_vendas[frete_valor])
+
+MEASURE '_Medidas'[Frete Pedidos Válidos] =
+    CALCULATE(
+        SUM(fato_vendas[frete_valor]),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Frete Médio por Pedido] =
+    DIVIDE([Frete Pedidos Válidos], [Qtd Pedidos])
+
+MEASURE '_Medidas'[Qtd Pedidos Cancelados] =
+    CALCULATE(
+        DISTINCTCOUNT(fato_vendas[id_pedido]),
+        KEEPFILTERS(fato_vendas[status_pedido] = "Cancelado")
+    )
+
+MEASURE '_Medidas'[Qtd Pedidos Devolvidos] =
+    CALCULATE(
+        DISTINCTCOUNT(fato_vendas[id_pedido]),
+        KEEPFILTERS(fato_vendas[status_pedido] = "Devolvido")
+    )
+
+MEASURE '_Medidas'[% Taxa Cancelamento] =
+    DIVIDE([Qtd Pedidos Cancelados], [Qtd Pedidos Total])
+
+MEASURE '_Medidas'[% Taxa Devolução] =
+    DIVIDE([Qtd Pedidos Devolvidos], [Qtd Pedidos Total])
+
+
+// ----------------------------------------------------------------------------
+// PASTA: 02 Custos & Margem
+// ----------------------------------------------------------------------------
+
+MEASURE '_Medidas'[Custo Total] =
+    CALCULATE(
+        SUMX(
+            fato_vendas,
+            fato_vendas[quantidade] * RELATED(dim_produto[custo_ref])
+        ),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Lucro Bruto] =
+    [Faturamento] - [Custo Total]
+
+MEASURE '_Medidas'[Margem Bruta %] =
+    DIVIDE([Lucro Bruto], [Faturamento])
+
+MEASURE '_Medidas'[Custo Realizado] =
+    CALCULATE(
+        SUMX(
+            fato_vendas,
+            fato_vendas[quantidade] * fato_vendas[custo_unitario]
+        ),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Lucro Realizado] =
+    [Faturamento] - [Custo Realizado]
+
+MEASURE '_Medidas'[Margem Realizada %] =
+    DIVIDE([Lucro Realizado], [Faturamento])
+
+MEASURE '_Medidas'[Variação Custo Real vs Ref] =
+    [Custo Realizado] - [Custo Total]
+
+
+// ----------------------------------------------------------------------------
+// PASTA: 03 Logística & Satisfação
+// ----------------------------------------------------------------------------
+
+MEASURE '_Medidas'[Qtd Pedidos Atrasados] =
+    CALCULATE(
+        DISTINCTCOUNT(fato_vendas[id_pedido]),
+        KEEPFILTERS(fato_vendas[status_atraso] = "Atrasado"),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[% Pedidos Atrasados] =
+    DIVIDE([Qtd Pedidos Atrasados], [Qtd Pedidos])
+
+MEASURE '_Medidas'[Qtd Pedidos No Prazo ou Adiantado] =
+    CALCULATE(
+        DISTINCTCOUNT(fato_vendas[id_pedido]),
+        KEEPFILTERS(fato_vendas[status_atraso] IN {"Adiantado", "No prazo"}),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[% Entregas no Prazo (OTD)] =
+    DIVIDE(
+        [Qtd Pedidos No Prazo ou Adiantado],
+        [Qtd Pedidos Atrasados] + [Qtd Pedidos No Prazo ou Adiantado]
+    )
+
+MEASURE '_Medidas'[Prazo Previsto Médio (dias)] =
+    CALCULATE(
+        AVERAGE(fato_vendas[prazo_previsto_dias]),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"})),
+        KEEPFILTERS(NOT(ISBLANK(fato_vendas[prazo_previsto_dias])))
+    )
+
+MEASURE '_Medidas'[Prazo Real Médio (dias)] =
+    CALCULATE(
+        AVERAGE(fato_vendas[prazo_real_dias]),
+        KEEPFILTERS(fato_vendas[status_pedido] = "Entregue"),
+        KEEPFILTERS(NOT(ISBLANK(fato_vendas[prazo_real_dias])))
+    )
+
+MEASURE '_Medidas'[Atraso Médio (dias)] =
+    CALCULATE(
+        AVERAGE(fato_vendas[atraso_dias]),
+        KEEPFILTERS(fato_vendas[status_atraso] = "Atrasado"),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Nota Média Cliente] =
+    CALCULATE(
+        AVERAGE(fato_vendas[avaliacao_cliente]),
+        KEEPFILTERS(fato_vendas[avaliacao_cliente] >= 1),
+        KEEPFILTERS(fato_vendas[avaliacao_cliente] <= 5)
+    )
+
+MEASURE '_Medidas'[Qtd Avaliações Válidas] =
+    CALCULATE(
+        COUNT(fato_vendas[avaliacao_cliente]),
+        KEEPFILTERS(fato_vendas[avaliacao_cliente] >= 1),
+        KEEPFILTERS(fato_vendas[avaliacao_cliente] <= 5)
+    )
+
+MEASURE '_Medidas'[Nota Média (Pedidos Atrasados)] =
+    CALCULATE(
+        [Nota Média Cliente],
+        KEEPFILTERS(fato_vendas[status_atraso] = "Atrasado")
+    )
+
+MEASURE '_Medidas'[Nota Média (Pedidos No Prazo)] =
+    CALCULATE(
+        [Nota Média Cliente],
+        KEEPFILTERS(fato_vendas[status_atraso] IN {"Adiantado", "No prazo"})
+    )
+
+
+// ----------------------------------------------------------------------------
+// PASTA: 04 Clientes
+// ----------------------------------------------------------------------------
+
+MEASURE '_Medidas'[Clientes Ativos] =
+    COUNTROWS(
+        FILTER(
+            VALUES(dim_cliente[id_cliente]),
+            CALCULATE(
+                DISTINCTCOUNT(fato_vendas[id_pedido]),
+                NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"})
+            ) >= 1
+        )
+    )
+
+MEASURE '_Medidas'[Clientes Novos] =
+    COUNTROWS(
+        FILTER(
+            VALUES(dim_cliente[id_cliente]),
+            CALCULATE(
+                DISTINCTCOUNT(fato_vendas[id_pedido]),
+                NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"})
+            ) = 1
+        )
+    )
+
+MEASURE '_Medidas'[Clientes Recorrentes] =
+    COUNTROWS(
+        FILTER(
+            VALUES(dim_cliente[id_cliente]),
+            CALCULATE(
+                DISTINCTCOUNT(fato_vendas[id_pedido]),
+                NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"})
+            ) >= 2
+        )
+    )
+
+MEASURE '_Medidas'[% Taxa Recompra] =
+    DIVIDE([Clientes Recorrentes], [Clientes Ativos])
+
+MEASURE '_Medidas'[Frequência Média de Compra] =
+    DIVIDE([Qtd Pedidos], [Clientes Ativos])
+
+MEASURE '_Medidas'[Faturamento por Cliente] =
+    DIVIDE([Faturamento], [Clientes Ativos])
+
+MEASURE '_Medidas'[Faturamento Clientes Recorrentes] =
+    VAR _ClientesRecorrentes =
+        FILTER(
+            VALUES(dim_cliente[id_cliente]),
+            CALCULATE(
+                DISTINCTCOUNT(fato_vendas[id_pedido]),
+                NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"})
+            ) >= 2
+        )
+    RETURN
+        CALCULATE([Faturamento], _ClientesRecorrentes)
+
+MEASURE '_Medidas'[% Faturamento Recorrente] =
+    DIVIDE([Faturamento Clientes Recorrentes], [Faturamento])
+
+
+// ----------------------------------------------------------------------------
+// PASTA: 05 Canais & Mix
+// ----------------------------------------------------------------------------
+
+MEASURE '_Medidas'[Faturamento Online] =
+    CALCULATE(
+        [Faturamento],
+        KEEPFILTERS(dim_canal_loja[tipo_canal] = "Online (e-commerce)")
+    )
+
+MEASURE '_Medidas'[Faturamento Loja Física] =
+    CALCULATE(
+        [Faturamento],
+        KEEPFILTERS(dim_canal_loja[tipo_canal] = "Loja física")
+    )
+
+MEASURE '_Medidas'[% Share Online] =
+    DIVIDE([Faturamento Online], [Faturamento])
+
+MEASURE '_Medidas'[% Share Canal] =
+    DIVIDE(
+        [Faturamento],
+        CALCULATE([Faturamento], ALLSELECTED(dim_canal_loja))
+    )
+
+MEASURE '_Medidas'[% Share Categoria] =
+    DIVIDE(
+        [Faturamento],
+        CALCULATE([Faturamento], ALLSELECTED(dim_produto))
+    )
+
+MEASURE '_Medidas'[% Share Faturamento Total] =
+    DIVIDE(
+        [Faturamento],
+        CALCULATE([Faturamento], REMOVEFILTERS())
+    )
+
+MEASURE '_Medidas'[Ranking Produto Faturamento] =
+    IF(
+        ISINSCOPE(dim_produto[produto]),
+        RANKX(
+            ALLSELECTED(dim_produto[produto]),
+            [Faturamento],
+            ,
+            DESC,
+            DENSE
+        )
+    )
+
+MEASURE '_Medidas'[Faturamento Pix] =
+    CALCULATE(
+        [Faturamento],
+        KEEPFILTERS(fato_vendas[forma_pagamento] = "Pix")
+    )
+
+MEASURE '_Medidas'[% Share Pix] =
+    DIVIDE([Faturamento Pix], [Faturamento])
+
+MEASURE '_Medidas'[Qtd Parcelas Média] =
+    CALCULATE(
+        AVERAGE(fato_vendas[parcelas]),
+        KEEPFILTERS(fato_vendas[forma_pagamento] = "Cartão de Crédito"),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+
+// ----------------------------------------------------------------------------
+// PASTA: 06 Tempo, Câmbio & Clima
+// ----------------------------------------------------------------------------
+// Nota de modelagem: TREATAS garante que filtros vindos de dim_tempo ou
+// dim_cidade propaguem para dim_cambio e dim_clima via fato_vendas, sem
+// criar relacionamentos redundantes/ambíguos entre dimensões.
+
+MEASURE '_Medidas'[Faturamento Mês Anterior (MoM)] =
+    CALCULATE(
+        [Faturamento],
+        DATEADD(dim_tempo[data], -1, MONTH)
+    )
+
+MEASURE '_Medidas'[Var % Faturamento MoM] =
+    DIVIDE(
+        [Faturamento] - [Faturamento Mês Anterior (MoM)],
+        [Faturamento Mês Anterior (MoM)]
+    )
+
+MEASURE '_Medidas'[Faturamento Ano Anterior (YoY)] =
+    CALCULATE(
+        [Faturamento],
+        DATEADD(dim_tempo[data], -1, YEAR)
+    )
+
+MEASURE '_Medidas'[Var % Faturamento YoY] =
+    DIVIDE(
+        [Faturamento] - [Faturamento Ano Anterior (YoY)],
+        [Faturamento Ano Anterior (YoY)]
+    )
+
+MEASURE '_Medidas'[Faturamento Acumulado Ano (YTD)] =
+    TOTALYTD([Faturamento], dim_tempo[data])
+
+MEASURE '_Medidas'[Dólar PTAX Médio] =
+    CALCULATE(
+        AVERAGE(dim_cambio[cotacao_venda]),
+        TREATAS(VALUES(fato_vendas[data_pedido]), dim_cambio[data])
+    )
+
+MEASURE '_Medidas'[Temp Máx Média] =
+    CALCULATE(
+        AVERAGE(dim_clima[temp_max]),
+        TREATAS(VALUES(fato_vendas[chave_clima]), dim_clima[chave_clima])
+    )
+
+MEASURE '_Medidas'[Temp Mín Média] =
+    CALCULATE(
+        AVERAGE(dim_clima[temp_min]),
+        TREATAS(VALUES(fato_vendas[chave_clima]), dim_clima[chave_clima])
+    )
+
+MEASURE '_Medidas'[Precipitação Média mm] =
+    CALCULATE(
+        AVERAGE(dim_clima[precipitacao]),
+        TREATAS(VALUES(fato_vendas[chave_clima]), dim_clima[chave_clima])
+    )
+
+MEASURE '_Medidas'[% Pedidos Atrasados Dias Chuvosos] =
+    CALCULATE(
+        [% Pedidos Atrasados],
+        KEEPFILTERS(dim_clima[precipitacao] > 0)
+    )
+
+MEASURE '_Medidas'[% Pedidos Atrasados Dias Secos] =
+    CALCULATE(
+        [% Pedidos Atrasados],
+        KEEPFILTERS(dim_clima[precipitacao] = 0)
+    )
+
+
+// ----------------------------------------------------------------------------
+// PASTA: 07 Rótulos
+// ----------------------------------------------------------------------------
+
+MEASURE '_Medidas'[Título Dinâmico Período] =
+    VAR _MinData = MIN(dim_tempo[data])
+    VAR _MaxData = MAX(dim_tempo[data])
+    RETURN
+        "Período analisado: "
+            & FORMAT(_MinData, "dd/MM/yyyy")
+            & " a "
+            & FORMAT(_MaxData, "dd/MM/yyyy")
+
+MEASURE '_Medidas'[Subtítulo Filtros Ativos] =
+    VAR _Regiao =
+        IF(
+            ISFILTERED(dim_cidade[regiao]),
+            "Região: " & CONCATENATEX(VALUES(dim_cidade[regiao]), dim_cidade[regiao], ", "),
+            "Todas as regiões"
+        )
+    VAR _Canal =
+        IF(
+            ISFILTERED(dim_canal_loja[canal]),
+            "Canal: " & CONCATENATEX(VALUES(dim_canal_loja[canal]), dim_canal_loja[canal], ", "),
+            "Todos os canais"
+        )
+    VAR _Categoria =
+        IF(
+            ISFILTERED(dim_produto[categoria]),
+            "Categoria: " & CONCATENATEX(VALUES(dim_produto[categoria]), dim_produto[categoria], ", "),
+            "Todas as categorias"
+        )
+    RETURN
+        _Regiao & "  |  " & _Canal & "  |  " & _Categoria
+
+MEASURE '_Medidas'[Rótulo MoM Faturamento] =
+    VAR _Var = [Var % Faturamento MoM]
+    RETURN
+        IF(
+            ISBLANK(_Var),
+            "Sem base mês anterior",
+            IF(_Var >= 0, "▲ ", "▼ ")
+                & FORMAT(ABS(_Var), "0.0%")
+                & " vs mês anterior"
+        )
+
+MEASURE '_Medidas'[Cor Status Atraso] =
+    VAR _Taxa = [% Pedidos Atrasados]
+    RETURN
+        SWITCH(
+            TRUE(),
+            ISBLANK(_Taxa), "#64748B",
+            _Taxa <= 0.05, "#2E7D32",
+            _Taxa <= 0.10, "#E9A825",
+            "#C0392B"
+        )
+
+MEASURE '_Medidas'[Cor Margem Bruta] =
+    VAR _Margem = [Margem Bruta %]
+    RETURN
+        SWITCH(
+            TRUE(),
+            ISBLANK(_Margem), "#64748B",
+            _Margem >= 0.30, "#2E7D32",
+            _Margem >= 0.20, "#E9A825",
+            "#C0392B"
+        )
+
+
+// ----------------------------------------------------------------------------
+// PASTA: 99 Conferência
+// ----------------------------------------------------------------------------
+
+MEASURE '_Medidas'[Conf Linhas Fato] =
+    COUNTROWS(fato_vendas)
+
+MEASURE '_Medidas'[Conf Valor Líquido Coluna] =
+    CALCULATE(
+        SUM(fato_vendas[valor_liquido]),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Conf Diferença Faturamento vs Coluna] =
+    [Faturamento] - [Conf Valor Líquido Coluna]
+
+MEASURE '_Medidas'[Conf Custo Ref Coluna] =
+    CALCULATE(
+        SUM(fato_vendas[custo_ref_total]),
+        KEEPFILTERS(NOT(fato_vendas[status_pedido] IN {"Cancelado", "Devolvido"}))
+    )
+
+MEASURE '_Medidas'[Conf Diferença Custo Ref] =
+    [Custo Total] - [Conf Custo Ref Coluna]
+
+MEASURE '_Medidas'[Conf Avaliações Inválidas] =
+    CALCULATE(
+        COUNT(fato_vendas[avaliacao_cliente]),
+        KEEPFILTERS(NOT(ISBLANK(fato_vendas[avaliacao_cliente]))),
+        KEEPFILTERS(
+            fato_vendas[avaliacao_cliente] < 1
+                || fato_vendas[avaliacao_cliente] > 5
+        )
+    )
+
+MEASURE '_Medidas'[Conf Pedidos Sem Clima] =
+    CALCULATE(
+        COUNTROWS(fato_vendas),
+        ISBLANK(RELATED(dim_clima[chave_clima]))
+    )
+
+MEASURE '_Medidas'[Conf Pedidos Sem Câmbio] =
+    CALCULATE(
+        COUNTROWS(fato_vendas),
+        ISBLANK(RELATED(dim_cambio[data]))
+    )
+
+
+// ----------------------------------------------------------------------------
+// BLOCO DE TESTE RÁPIDO (DAX Query View)
+// ----------------------------------------------------------------------------
+EVALUATE
+ROW(
+    "Linhas Fato", [Conf Linhas Fato],
+    "Faturamento Bruto", [Faturamento Bruto],
+    "Faturamento", [Faturamento],
+    "Qtd Pedidos", [Qtd Pedidos],
+    "Qtd Pedidos Total", [Qtd Pedidos Total],
+    "Ticket Médio", [Ticket Médio],
+    "Qtd Itens", [Qtd Itens],
+    "Itens por Pedido", [Itens por Pedido],
+    "Frete Total", [Frete Total],
+    "Custo Total", [Custo Total],
+    "Margem Bruta %", [Margem Bruta %],
+    "Custo Realizado", [Custo Realizado],
+    "Margem Realizada %", [Margem Realizada %],
+    "Qtd Pedidos Atrasados", [Qtd Pedidos Atrasados],
+    "% Pedidos Atrasados", [% Pedidos Atrasados],
+    "Nota Média Cliente", [Nota Média Cliente],
+    "Avaliações Inválidas", [Conf Avaliações Inválidas],
+    "Clientes Ativos", [Clientes Ativos],
+    "Clientes Novos", [Clientes Novos],
+    "Clientes Recorrentes", [Clientes Recorrentes],
+    "% Taxa Recompra", [% Taxa Recompra],
+    "Dólar PTAX Médio", [Dólar PTAX Médio],
+    "Temp Máx Média", [Temp Máx Média],
+    "Precipitação Média mm", [Precipitação Média mm]
+)

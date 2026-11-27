@@ -1,0 +1,387 @@
+// ============================================================================
+// VarejoMax Brasil — Bateria de Validação DAX (DAX Query View)
+// ============================================================================
+// Pré-requisito: aplicar primeiro as medidas de dax/medidas_finais.dax no modelo.
+// Mapeamento 1-para-1 com as consultas SQL de varejomax_consultas.sql (C1..C10)
+// e conferências K4/K5 de varejomax_conferencia.sql.
+// Execução: no Power BI Desktop -> DAX Query View -> "Run" (executa todas
+// as consultas EVALUATE abaixo e gera uma aba de resultado por bloco).
+// Registrar os resultados obtidos em: evidencias/validacao_resultados.md
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// V-K4: Validação dos KPIs Oficiais do Negócio vs. Valores de Referência (SQLite K5)
+// ----------------------------------------------------------------------------
+EVALUATE
+ROW(
+    "Bloco", "V-K4 KPIs Oficiais",
+    "Faturamento Bruto (Ref 3.797.167,40)", [Faturamento Bruto],
+    "Faturamento (Ref 3.448.872,47)", [Faturamento],
+    "Qtd Pedidos (Ref 8.291)", [Qtd Pedidos],
+    "Qtd Pedidos Total (Ref 8.996)", [Qtd Pedidos Total],
+    "Ticket Médio (Ref 415,98)", [Ticket Médio],
+    "Qtd Itens (Ref 16.581)", [Qtd Itens],
+    "Itens por Pedido (Ref 2,00)", [Itens por Pedido],
+    "Frete Total Todos Status (Ref 97.922,36)", [Frete Total],
+    "Frete Pedidos Válidos (Ref 93.707,67)", [Frete Pedidos Válidos],
+    "Custo Total Ref (Ref 2.372.700,48)", [Custo Total],
+    "Lucro Bruto (Ref 1.076.171,99)", [Lucro Bruto],
+    "Margem Bruta % (Ref 31,20%)", [Margem Bruta %],
+    "Custo Realizado (Ref 2.402.823,74)", [Custo Realizado],
+    "Margem Realizada % (Ref 30,33%)", [Margem Realizada %],
+    "Qtd Pedidos Atrasados (Ref 628)", [Qtd Pedidos Atrasados],
+    "% Pedidos Atrasados s/ Válidos (Ref 7,57%)", [% Pedidos Atrasados],
+    "% Entregas no Prazo OTD (Ref 92,32%)", [% Entregas no Prazo (OTD)],
+    "Nota Média Cliente 1..5 Itens (Ref 4,11)", [Nota Média Cliente],
+    "Clientes Ativos (Ref 1.571)", [Clientes Ativos],
+    "Clientes Novos (Ref 449)", [Clientes Novos],
+    "Clientes Recorrentes (Ref 1.122)", [Clientes Recorrentes],
+    "% Taxa Recompra (Ref 71,42%)", [% Taxa Recompra]
+)
+
+// ----------------------------------------------------------------------------
+// V-K5: Integridade Referencial, Contagem de Dimensões e Regras de Qualidade
+// ----------------------------------------------------------------------------
+EVALUATE
+UNION(
+    ROW("Item", "V-K5.01 fato_vendas linhas (Ref 13.613)", "Valor", [Conf Linhas Fato], "Esperado", 13613),
+    ROW("Item", "V-K5.02 dim_produto linhas (Ref 49)", "Valor", COUNTROWS(dim_produto), "Esperado", 49),
+    ROW("Item", "V-K5.03 dim_cliente linhas (Ref 1.607)", "Valor", COUNTROWS(dim_cliente), "Esperado", 1607),
+    ROW("Item", "V-K5.04 dim_cidade linhas (Ref 24)", "Valor", COUNTROWS(dim_cidade), "Esperado", 24),
+    ROW("Item", "V-K5.05 dim_canal_loja linhas (Ref 10)", "Valor", COUNTROWS(dim_canal_loja), "Esperado", 10),
+    ROW("Item", "V-K5.06 dim_transportadora linhas (Ref 6)", "Valor", COUNTROWS(dim_transportadora), "Esperado", 6),
+    ROW("Item", "V-K5.07 dim_tempo linhas (Ref 608)", "Valor", COUNTROWS(dim_tempo), "Esperado", 608),
+    ROW("Item", "V-K5.08 dim_cambio linhas (Ref 608)", "Valor", COUNTROWS(dim_cambio), "Esperado", 608),
+    ROW("Item", "V-K5.09 dim_clima linhas (Ref 14.592)", "Valor", COUNTROWS(dim_clima), "Esperado", 14592),
+    ROW("Item", "V-K5.10 Pedidos Cancelados (Ref 355)", "Valor", [Qtd Pedidos Cancelados], "Esperado", 355),
+    ROW("Item", "V-K5.11 Pedidos Devolvidos (Ref 350)", "Valor", [Qtd Pedidos Devolvidos], "Esperado", 350),
+    ROW("Item", "V-K5.12 Avaliações Inválidas ignoradas (Ref 8)", "Valor", [Conf Avaliações Inválidas], "Esperado", 8),
+    ROW("Item", "V-K5.13 Fato sem correspondência em dim_clima (Ref 0)", "Valor", [Conf Pedidos Sem Clima], "Esperado", 0),
+    ROW("Item", "V-K5.14 Fato sem correspondência em dim_cambio (Ref 0)", "Valor", [Conf Pedidos Sem Câmbio], "Esperado", 0),
+    ROW("Item", "V-K5.15 Diferença Faturamento vs Coluna valor_liquido", "Valor", ROUND([Conf Diferença Faturamento vs Coluna], 2), "Esperado", 0),
+    ROW("Item", "V-K5.16 Diferença Custo Ref vs Coluna custo_ref_total", "Valor", ROUND([Conf Diferença Custo Ref], 2), "Esperado", 0)
+)
+
+// ----------------------------------------------------------------------------
+// V-C1: Evolução Mensal de Vendas e Crescimento MoM (espelho SQL C1)
+// ----------------------------------------------------------------------------
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_tempo[ano],
+    dim_tempo[mes],
+    dim_tempo[ano_mes],
+    "Pedidos Válidos", [Qtd Pedidos],
+    "Unidades Válidas", [Qtd Itens],
+    "Faturamento Bruto", [Faturamento Bruto],
+    "Faturamento Líquido", [Faturamento],
+    "Ticket Médio", [Ticket Médio],
+    "Margem Realizada %", [Margem Realizada %],
+    "Faturamento Mês Anterior", [Faturamento Mês Anterior (MoM)],
+    "Var % MoM", [Var % Faturamento MoM]
+)
+ORDER BY dim_tempo[ano] ASC, dim_tempo[mes] ASC
+
+// ----------------------------------------------------------------------------
+// V-C2: Categorias, Margem Ref. vs Realizada e % Participação (espelho SQL C2)
+// ----------------------------------------------------------------------------
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_produto[categoria],
+    "Pedidos Válidos", [Qtd Pedidos],
+    "Unidades Válidas", [Qtd Itens],
+    "Faturamento Bruto", [Faturamento Bruto],
+    "Faturamento Líquido", [Faturamento],
+    "% Participação", [% Share Categoria],
+    "Margem Ref %", [Margem Bruta %],
+    "Margem Realizada %", [Margem Realizada %],
+    "Delta Margem (pp)", ([Margem Realizada %] - [Margem Bruta %]) * 100
+)
+ORDER BY [Faturamento Líquido] DESC
+
+// ----------------------------------------------------------------------------
+// V-C3: Canais de Venda e Lojas (espelho SQL C3)
+// ----------------------------------------------------------------------------
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_canal_loja[tipo_canal],
+    dim_canal_loja[canal],
+    dim_canal_loja[loja],
+    "Pedidos Válidos", [Qtd Pedidos],
+    "Unidades Válidas", [Qtd Itens],
+    "Faturamento Líquido", [Faturamento],
+    "% Participação Rede", [% Share Canal],
+    "Ticket Médio", [Ticket Médio],
+    "Margem Realizada %", [Margem Realizada %],
+    "Nota Média Cliente", [Nota Média Cliente]
+)
+ORDER BY [Faturamento Líquido] DESC
+
+// ----------------------------------------------------------------------------
+// V-C4: Geográfico — Regiões e Top 10 Cidades (espelho SQL C4)
+// ----------------------------------------------------------------------------
+EVALUATE
+TOPN(
+    10,
+    SUMMARIZECOLUMNS(
+        dim_cidade[cidade],
+        dim_cidade[uf],
+        dim_cidade[regiao],
+        dim_cidade[tem_loja_fisica],
+        "Pedidos Válidos", [Qtd Pedidos],
+        "Faturamento Líquido", [Faturamento],
+        "% Participação", [% Share Faturamento Total],
+        "Ticket Médio", [Ticket Médio],
+        "Pedidos Atrasados", [Qtd Pedidos Atrasados],
+        "% Pedidos Atrasados", [% Pedidos Atrasados]
+    ),
+    [Faturamento Líquido], DESC
+)
+ORDER BY [Faturamento Líquido] DESC
+
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_cidade[regiao],
+    "Pedidos Válidos", [Qtd Pedidos],
+    "Faturamento Líquido", [Faturamento],
+    "% Participação", [% Share Faturamento Total],
+    "Ticket Médio", [Ticket Médio],
+    "Pedidos Atrasados", [Qtd Pedidos Atrasados],
+    "% Pedidos Atrasados", [% Pedidos Atrasados]
+)
+ORDER BY [Faturamento Líquido] DESC
+
+// ----------------------------------------------------------------------------
+// V-C5: Desempenho Logístico por Transportadora + Nota Média (espelho SQL C5)
+// ----------------------------------------------------------------------------
+// Nota de granularidade: no Star Schema por item, os 81 pedidos mistos com
+// "Não informado" seguem a granularidade de item da view fato_vendas, enquanto
+// a consulta SQL C5 e o VBA consolidam 1 transportadora por pedido entregue
+// (totalizando exatos 8.180 pedidos entregues e 628 atrasos).
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_transportadora[transportadora],
+    dim_transportadora[tipo],
+    "Pedidos Válidos", [Qtd Pedidos],
+    "Pedidos Atrasados", [Qtd Pedidos Atrasados],
+    "% Pedidos Atrasados", [% Pedidos Atrasados],
+    "% Entregas no Prazo (OTD)", [% Entregas no Prazo (OTD)],
+    "Prazo Previsto Médio (dias)", [Prazo Previsto Médio (dias)],
+    "Prazo Real Médio (dias)", [Prazo Real Médio (dias)],
+    "Atraso Médio (dias)", [Atraso Médio (dias)],
+    "Nota Média Geral", [Nota Média Cliente],
+    "Nota Média c/ Atraso", [Nota Média (Pedidos Atrasados)],
+    "Nota Média s/ Atraso", [Nota Média (Pedidos No Prazo)]
+)
+ORDER BY [% Pedidos Atrasados] DESC
+
+// ----------------------------------------------------------------------------
+// V-C6: Pedidos Críticos em Atraso (atraso_dias >= 5) (espelho SQL C6)
+// ----------------------------------------------------------------------------
+EVALUATE
+TOPN(
+    15,
+    FILTER(
+        SUMMARIZECOLUMNS(
+            fato_vendas[id_pedido],
+            fato_vendas[data_pedido],
+            fato_vendas[data_entrega_prevista],
+            fato_vendas[data_entrega_real],
+            dim_cidade[regiao],
+            dim_cidade[uf],
+            dim_cidade[cidade],
+            dim_transportadora[transportadora],
+            FILTER(
+                VALUES(fato_vendas[status_pedido]),
+                fato_vendas[status_pedido] = "Entregue"
+            ),
+            "Max Atraso Dias", MAX(fato_vendas[atraso_dias]),
+            "Valor Líquido Pedido", [Faturamento],
+            "Nota Cliente", [Nota Média Cliente]
+        ),
+        [Max Atraso Dias] >= 5
+    ),
+    [Max Atraso Dias], DESC,
+    [Valor Líquido Pedido], DESC
+)
+
+// ----------------------------------------------------------------------------
+// V-C7: Clientes Ativos, Recorrência/Frequência e Concentração por Região (espelho SQL C7)
+// ----------------------------------------------------------------------------
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_cliente[regiao],
+    "Clientes Ativos", [Clientes Ativos],
+    "Clientes Novos (1 ped.)", [Clientes Novos],
+    "Clientes Recorrentes (2+ ped.)", [Clientes Recorrentes],
+    "% Taxa Recompra", [% Taxa Recompra],
+    "Frequência Média", [Frequência Média de Compra],
+    "LTV Médio Cliente", [Faturamento por Cliente],
+    "Faturamento Líquido", [Faturamento],
+    "% Faturamento Recorrente", [% Faturamento Recorrente]
+)
+ORDER BY [Faturamento Líquido] DESC
+
+EVALUATE
+VAR _BaseClientes =
+    FILTER(
+        ADDCOLUMNS(
+            VALUES(dim_cliente[id_cliente]),
+            "_Ped", [Qtd Pedidos],
+            "_Fat", [Faturamento]
+        ),
+        [_Ped] >= 1
+    )
+RETURN
+UNION(
+    ROW(
+        "Segmento RFV", "1-Novo (1 pedido)",
+        "Qtd Clientes", COUNTROWS(FILTER(_BaseClientes, [_Ped] = 1)),
+        "Total Pedidos", SUMX(FILTER(_BaseClientes, [_Ped] = 1), [_Ped]),
+        "Faturamento Líquido", SUMX(FILTER(_BaseClientes, [_Ped] = 1), [_Fat])
+    ),
+    ROW(
+        "Segmento RFV", "2-Recorrente (2 a 4 pedidos)",
+        "Qtd Clientes", COUNTROWS(FILTER(_BaseClientes, [_Ped] >= 2 && [_Ped] <= 4)),
+        "Total Pedidos", SUMX(FILTER(_BaseClientes, [_Ped] >= 2 && [_Ped] <= 4), [_Ped]),
+        "Faturamento Líquido", SUMX(FILTER(_BaseClientes, [_Ped] >= 2 && [_Ped] <= 4), [_Fat])
+    ),
+    ROW(
+        "Segmento RFV", "3-Fiel (5 a 7 pedidos)",
+        "Qtd Clientes", COUNTROWS(FILTER(_BaseClientes, [_Ped] >= 5 && [_Ped] <= 7)),
+        "Total Pedidos", SUMX(FILTER(_BaseClientes, [_Ped] >= 5 && [_Ped] <= 7), [_Ped]),
+        "Faturamento Líquido", SUMX(FILTER(_BaseClientes, [_Ped] >= 5 && [_Ped] <= 7), [_Fat])
+    ),
+    ROW(
+        "Segmento RFV", "4-VIP (8+ pedidos)",
+        "Qtd Clientes", COUNTROWS(FILTER(_BaseClientes, [_Ped] >= 8)),
+        "Total Pedidos", SUMX(FILTER(_BaseClientes, [_Ped] >= 8), [_Ped]),
+        "Faturamento Líquido", SUMX(FILTER(_BaseClientes, [_Ped] >= 8), [_Fat])
+    )
+)
+
+// ----------------------------------------------------------------------------
+// V-C8: Impacto de Descontos, Cancelamentos e Devoluções por Categoria e Tipo de Canal (espelho SQL C8)
+// ----------------------------------------------------------------------------
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_produto[categoria],
+    dim_canal_loja[tipo_canal],
+    "Pedidos Totais", [Qtd Pedidos Total],
+    "Pedidos Cancelados", [Qtd Pedidos Cancelados],
+    "Pedidos Devolvidos", [Qtd Pedidos Devolvidos],
+    "% Taxa Cancelamento", [% Taxa Cancelamento],
+    "% Taxa Devolução", [% Taxa Devolução],
+    "Desconto Concedido", [Desconto Concedido],
+    "% Desconto Médio", [% Desconto Médio],
+    "Faturamento Líquido", [Faturamento],
+    "Margem Realizada %", [Margem Realizada %]
+)
+ORDER BY dim_produto[categoria] ASC, dim_canal_loja[tipo_canal] ASC
+
+// ----------------------------------------------------------------------------
+// V-C9: API 1 — Câmbio PTAX x Eletrônicos vs Demais Categorias (espelho SQL C9)
+// ----------------------------------------------------------------------------
+EVALUATE
+UNION(
+    SUMMARIZECOLUMNS(
+        dim_cambio[faixa_dolar],
+        FILTER(VALUES(dim_produto[categoria]), dim_produto[categoria] = "Eletrônicos"),
+        "Grupo Categoria", "Eletrônicos",
+        "PTAX Venda Médio", [Dólar PTAX Médio],
+        "Pedidos Válidos", [Qtd Pedidos],
+        "Unidades Válidas", [Qtd Itens],
+        "Faturamento Líquido", [Faturamento],
+        "Ticket Médio", [Ticket Médio],
+        "Margem Ref %", [Margem Bruta %],
+        "Margem Realizada %", [Margem Realizada %]
+    ),
+    SUMMARIZECOLUMNS(
+        dim_cambio[faixa_dolar],
+        FILTER(VALUES(dim_produto[categoria]), dim_produto[categoria] <> "Eletrônicos"),
+        "Grupo Categoria", "Demais Categorias",
+        "PTAX Venda Médio", [Dólar PTAX Médio],
+        "Pedidos Válidos", [Qtd Pedidos],
+        "Unidades Válidas", [Qtd Itens],
+        "Faturamento Líquido", [Faturamento],
+        "Ticket Médio", [Ticket Médio],
+        "Margem Ref %", [Margem Bruta %],
+        "Margem Realizada %", [Margem Realizada %]
+    )
+)
+ORDER BY dim_cambio[faixa_dolar] ASC, [Grupo Categoria] ASC
+
+// ----------------------------------------------------------------------------
+// V-C10: API 2 — Clima & Calendário (Fim de Semana / Feriado) x Atrasos e Vendas (espelho SQL C10)
+// ----------------------------------------------------------------------------
+EVALUATE
+SUMMARIZECOLUMNS(
+    dim_clima[faixa_precipitacao],
+    dim_tempo[fim_de_semana],
+    dim_tempo[feriado],
+    "Pedidos Válidos", [Qtd Pedidos],
+    "Faturamento Líquido", [Faturamento],
+    "Pedidos Atrasados", [Qtd Pedidos Atrasados],
+    "% Pedidos Atrasados", [% Pedidos Atrasados],
+    "Atraso Médio (dias)", [Atraso Médio (dias)],
+    "Precipitação Média mm", [Precipitação Média mm],
+    "Temp Máx Média C", [Temp Máx Média]
+)
+ORDER BY dim_clima[faixa_precipitacao] ASC, dim_tempo[feriado] DESC, dim_tempo[fim_de_semana] DESC
+
+// ----------------------------------------------------------------------------
+// V-EXTRA1: Top 10 Produtos por Faturamento e Margem Bruta %
+// ----------------------------------------------------------------------------
+EVALUATE
+TOPN(
+    10,
+    SUMMARIZECOLUMNS(
+        dim_produto[id_produto],
+        dim_produto[produto],
+        dim_produto[categoria],
+        dim_produto[marca],
+        "Faturamento", [Faturamento],
+        "Qtd Itens", [Qtd Itens],
+        "Lucro Bruto", [Lucro Bruto],
+        "Margem Bruta %", [Margem Bruta %]
+    ),
+    [Faturamento], DESC
+)
+ORDER BY [Faturamento] DESC
+
+// ----------------------------------------------------------------------------
+// V-EXTRA2: Mix de Formas de Pagamento e Parcelamento
+// ----------------------------------------------------------------------------
+EVALUATE
+SUMMARIZECOLUMNS(
+    fato_vendas[forma_pagamento],
+    "Faturamento", [Faturamento],
+    "% Share Faturamento", [% Share Faturamento Total],
+    "Qtd Pedidos", [Qtd Pedidos],
+    "Ticket Médio", [Ticket Médio],
+    "Qtd Parcelas Média", [Qtd Parcelas Média]
+)
+ORDER BY [Faturamento] DESC
+
+// ----------------------------------------------------------------------------
+// V-CONF: Auditoria Cruzada Final (Checksum da Página Conferência)
+// ----------------------------------------------------------------------------
+EVALUATE
+ROW(
+    "Bloco", "V-CONF Auditoria",
+    "Linhas fato_vendas", [Conf Linhas Fato],
+    "Faturamento Bruto", [Faturamento Bruto],
+    "Faturamento Líquido", [Faturamento],
+    "Valor Líquido Coluna", [Conf Valor Líquido Coluna],
+    "Delta Faturamento", [Conf Diferença Faturamento vs Coluna],
+    "Custo Total (Ref)", [Custo Total],
+    "Custo Ref Coluna", [Conf Custo Ref Coluna],
+    "Delta Custo Ref", [Conf Diferença Custo Ref],
+    "Custo Realizado", [Custo Realizado],
+    "Faturamento Online + Loja Física", [Faturamento Online] + [Faturamento Loja Física],
+    "Delta Canais vs Faturamento", ([Faturamento Online] + [Faturamento Loja Física]) - [Faturamento],
+    "Clientes Novos + Recorrentes", [Clientes Novos] + [Clientes Recorrentes],
+    "Clientes Ativos", [Clientes Ativos],
+    "Avaliações Inválidas", [Conf Avaliações Inválidas],
+    "Pedidos Sem Clima", [Conf Pedidos Sem Clima],
+    "Pedidos Sem Câmbio", [Conf Pedidos Sem Câmbio]
+)

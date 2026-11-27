@@ -1,0 +1,11 @@
+Chave_Canal_Loja;Canal;Loja;Tipo_Canal;Cod_Loja;Cidade_Loja;UF_Loja
+Site | Online (sem loja);Site;Online (sem loja);Online (e-commerce);;;
+App | Online (sem loja);App;Online (sem loja);Online (e-commerce);;;
+Marketplace | Online (sem loja);Marketplace;Online (sem loja);Online (e-commerce);;;
+Loja Física | LJ01 - São Paulo Paulista;Loja Física;LJ01 - São Paulo Paulista;Loja física;LJ01;São Paulo;SP
+Loja Física | LJ02 - São Paulo Tatuapé;Loja Física;LJ02 - São Paulo Tatuapé;Loja física;LJ02;São Paulo;SP
+Loja Física | LJ03 - Rio Barra;Loja Física;LJ03 - Rio Barra;Loja física;LJ03;Rio de Janeiro;RJ
+Loja Física | LJ04 - BH Savassi;Loja Física;LJ04 - BH Savassi;Loja física;LJ04;Belo Horizonte;MG
+Loja Física | LJ05 - Curitiba Batel;Loja Física;LJ05 - Curitiba Batel;Loja física;LJ05;Curitiba;PR
+Loja Física | LJ06 - Porto Alegre Moinhos;Loja Física;LJ06 - Porto Alegre Moinhos;Loja física;LJ06;Porto Alegre;RS
+Loja Física | LJ07 - Brasília Asa Sul;Loja Física;LJ07 - Brasília Asa Sul;Loja física;LJ07;Brasília;DF
